@@ -24,6 +24,7 @@ public class MoviesActivity extends AppCompatActivity {
 //        4. Associate the adapter with uddkdevgkcukreguhtlihutihbjndldhthe ListView
         if (lvMovies != null) {
             lvMovies.setAdapter(adapter);
+            lvMovies.setDivider(null);
         }
     }
 }

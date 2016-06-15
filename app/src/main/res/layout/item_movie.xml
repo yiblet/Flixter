@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/ivPoster"
-        android:src="@mipmap/ic_launcher"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="0dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorText"
         android:text="Large Text"
         android:id="@+id/tvTitle"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/ivPoster"
-        android:layout_toEndOf="@+id/ivPoster"
-        android:textSize="26sp"
-        android:padding="10dp" />
+        android:textSize="20sp"
+        android:padding="10dp"
+        android:textIsSelectable="true"
+        android:layout_marginTop="46dp"
+        android:layout_gravity="center_horizontal" />
 
-</RelativeLayout>
+    <ImageView
+        android:layout_width="780dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/ivPoster"
+        android:src="@mipmap/ic_launcher"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorText"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/tvDescription"
+        android:textSize="18sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.15" />
+
+</LinearLayout>
