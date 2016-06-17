@@ -32,7 +32,7 @@
 
 
             <ImageView
-                android:layout_width="156dp"
+                android:layout_width="340dp"
                 android:layout_height="190dp"
                 android:id="@+id/ivPoster"
                 android:src="@mipmap/ic_launcher"

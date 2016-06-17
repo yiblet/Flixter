@@ -1,6 +1,7 @@
 package com.facebook.yiblet.flixter;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,26 +33,40 @@ public class MoviesAdapter extends ArrayAdapter<Movie> {
         retrieveMovies();
     }
 
+    private static class ViewHolder {
+        TextView tvTitle;
+        TextView tvDescription;
+        ImageView ivPoster;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
         Movie movie = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
+        ViewHolder viewHolder;
         if (convertView == null) {
+            viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_movie, parent, false);
+            viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+            viewHolder.tvDescription = (TextView) convertView.findViewById(R.id.tvDescription);
+            viewHolder.ivPoster = (ImageView) convertView.findViewById(R.id.ivPoster);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
+
         // Lookup view for data population
-        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-        TextView tvDescription = (TextView) convertView.findViewById(R.id.tvDescription);
-        ImageView ivPoster = (ImageView) convertView.findViewById(R.id.ivPoster);
+
         // Populate the data into the template view using the data object
-        tvTitle.setText(movie.title);
-        tvDescription.setText(movie.description);
+        viewHolder.tvTitle.setText(movie.title);
+        viewHolder.tvDescription.setText(movie.description);
 
         String imageUri = movie.posterUrl;
         Picasso.with(getContext()).load(imageUri)
+                .placeholder(convertView.getResources().getDrawable(android.R.drawable.ic_menu_report_image))
 //                .resize(780, 0)
-                .into(ivPoster);
+                .into(viewHolder.ivPoster);
         // Return the completed view to render on screen
         return convertView;
 
@@ -69,8 +84,15 @@ public class MoviesAdapter extends ArrayAdapter<Movie> {
                     JSONArray movies = response.getJSONArray("results");
                     for (int i = 0; i < movies.length(); i++) {
                         JSONObject movie = movies.getJSONObject(i);
-                        list.add(new Movie(movie.getString("title"), "https://image.tmdb.org/t/p/w780" + movie.getString("poster_path"),
-                                (movie.getDouble("vote_average")), movie.getString("overview")));
+                        String path;
+                        int orientation = getContext().getResources().getConfiguration().orientation;
+                        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            path = "backdrop_path";
+                        } else {
+                            path = "poster_path";
+                        }
+                        list.add(new Movie(movie.getString("title"), "https://image.tmdb.org/t/p/w780" + movie.getString(path),
+                                (movie.getDouble("vote_average")), movie.getString("overview"), movie));
                     }
                     that.notifyDataSetChanged();
                 } catch (Exception e) {

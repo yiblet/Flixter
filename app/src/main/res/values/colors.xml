@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#262626</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorText">#424242</color>
+    <color name="cardBackground">#f1f1f1</color>
+    <color name="background">#d7d7d7</color>
 </resources>
