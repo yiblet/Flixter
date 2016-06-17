@@ -17,6 +17,7 @@ public class Movie {
     public double vote;
     public String backdrop_path;
     public String poster_path;
+    public String id;
 
 
 
@@ -34,6 +35,7 @@ public class Movie {
             this.vote = raw.getDouble("vote_average");
             this.backdrop_path = "https://image.tmdb.org/t/p/w780" + raw.getString("backdrop_path");
             this.poster_path = "https://image.tmdb.org/t/p/w780" + raw.getString("poster_path");
+            this.id = new Integer(raw.getInt("id")).toString();
         } catch (Exception e) {
             e.printStackTrace();
         }

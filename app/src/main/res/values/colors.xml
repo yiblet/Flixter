@@ -6,4 +6,6 @@
     <color name="colorText">#424242</color>
     <color name="cardBackground">#f1f1f1</color>
     <color name="background">#d7d7d7</color>
+    <color name="yellow">#fdd835</color>
+    <color name="lightGrey">@color/cardBackground</color>
 </resources>

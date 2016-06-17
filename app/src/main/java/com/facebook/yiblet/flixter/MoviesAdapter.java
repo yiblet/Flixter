@@ -19,7 +19,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
  * Created by yiblet on 6/15/16.
@@ -33,10 +36,14 @@ public class MoviesAdapter extends ArrayAdapter<Movie> {
         retrieveMovies();
     }
 
-    private static class ViewHolder {
-        TextView tvTitle;
-        TextView tvDescription;
-        ImageView ivPoster;
+     static class ViewHolder {
+        @BindView(R.id.tvTitle)  TextView tvTitle;
+        @BindView(R.id.tvDescription) TextView tvDescription;
+        @BindView(R.id.ivPoster) ImageView ivPoster;
+
+        public ViewHolder(View v) {
+            ButterKnife.bind(this, v);
+        }
     }
 
     @Override
@@ -46,11 +53,11 @@ public class MoviesAdapter extends ArrayAdapter<Movie> {
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder;
         if (convertView == null) {
-            viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_movie, parent, false);
-            viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-            viewHolder.tvDescription = (TextView) convertView.findViewById(R.id.tvDescription);
-            viewHolder.ivPoster = (ImageView) convertView.findViewById(R.id.ivPoster);
+            viewHolder = new ViewHolder(convertView);
+//            viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+//            viewHolder.tvDescription = (TextView) convertView.findViewById(R.id.tvDescription);
+//            viewHolder.ivPoster = (ImageView) convertView.findViewById(R.id.ivPoster);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -64,6 +71,7 @@ public class MoviesAdapter extends ArrayAdapter<Movie> {
 
         String imageUri = movie.posterUrl;
         Picasso.with(getContext()).load(imageUri)
+                .transform(new RoundedCornersTransformation(20, 20))
                 .placeholder(convertView.getResources().getDrawable(android.R.drawable.ic_menu_report_image))
 //                .resize(780, 0)
                 .into(viewHolder.ivPoster);

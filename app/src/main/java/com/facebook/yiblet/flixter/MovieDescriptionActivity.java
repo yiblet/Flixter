@@ -4,17 +4,40 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayer.Provider;
+import com.google.android.youtube.player.YouTubePlayerView;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 import jp.wasabeef.picasso.transformations.BlurTransformation;
 import jp.wasabeef.picasso.transformations.GrayscaleTransformation;
 
-public class MovieDescriptionActivity extends AppCompatActivity {
+public class MovieDescriptionActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
+    private static final int RECOVERY_REQUEST = 1;
+    private YouTubePlayerView youTubeView;
+    private String link;
+
+
+
+    protected Provider getYouTubePlayerProvider() {
+        return youTubeView;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +61,41 @@ public class MovieDescriptionActivity extends AppCompatActivity {
         title.setText(i.getExtras().getString("title"));
         TextView description = (TextView) findViewById(R.id.tvDescription);
         description.setText(i.getExtras().getString("description"));
+        RatingBar rbRate = (RatingBar) findViewById(R.id.rbRate);
+        rbRate.setRating(((float) i.getExtras().getDouble("rating")) / 2);
+
+        youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("api_key", Config.MOVIE_DB_API_KEY);
+        String id = i.getExtras().getString("id");
+        link = "fhWaJi1Hsfo";
+        final MovieDescriptionActivity that = this;
+        client.get("https://api.themoviedb.org/3/movie/" + id +"/videos", params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    that.link = ((JSONObject) response.getJSONArray("results").get(1)).getString("key");
+                } catch (JSONException e) {
+                    that.link = "dQw4w9WgXcQ";
+                }
+                youTubeView.initialize(Config.YOUTUBE_API_KEY, that);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.d("ERROR", "onFailure: " + responseString);
+                youTubeView.initialize(Config.YOUTUBE_API_KEY, that);
+            }
+        });
     }
+
+    protected void doNothing(View v) {
+    }
+
+    //most of this was reapproriated from a guide on how to use the youtubeplayer
 
     @Override
     public void onBackPressed() {
@@ -252,5 +309,32 @@ public class MovieDescriptionActivity extends AppCompatActivity {
         bitmap.setPixels(pix, 0, w, 0, 0, w, h);
 
         return (bitmap);
+    }
+
+
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+        if (!b) {
+            youTubePlayer.cueVideo(link); // Plays https://www.youtube.com/watch?v=fhWaJi1Hsfo
+        }
+
+    }
+
+    @Override
+    public void onInitializationFailure(Provider provider, YouTubeInitializationResult errorReason) {
+        if (errorReason.isUserRecoverableError()) {
+            errorReason.getErrorDialog(this, RECOVERY_REQUEST).show();
+        } else {
+            String error = errorReason.toString();
+            Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RECOVERY_REQUEST) {
+            // Retry initialization if user performed a recovery action
+            getYouTubePlayerProvider().initialize(Config.YOUTUBE_API_KEY, this);
+        }
     }
 }

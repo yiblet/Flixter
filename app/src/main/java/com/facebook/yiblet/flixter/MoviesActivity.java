@@ -9,8 +9,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+
 public class MoviesActivity extends AppCompatActivity {
-    ListView list;
+    @BindView (R.id.lvMovies) ListView list;
     MoviesAdapter adapter;
     ArrayList<Movie> movies;
 
@@ -53,6 +55,7 @@ public class MoviesActivity extends AppCompatActivity {
                     i.putExtra("popularity", movie.popularity);
                     i.putExtra("poster_path", movie.poster_path);
                     i.putExtra("backdrop_path", movie.backdrop_path);
+                    i.putExtra("id", movie.id);
                     startActivity(i);
                 }
             }
